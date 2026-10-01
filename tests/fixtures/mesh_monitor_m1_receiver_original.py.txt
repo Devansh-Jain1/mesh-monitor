@@ -1,0 +1,1186 @@
+#!/usr/bin/env python3
+"""Authenticated AIY button receiver for the M1 Jarvis station."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import hmac
+import json
+import os
+import signal
+import subprocess
+import threading
+import time
+from collections import OrderedDict
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+
+class Station:
+    CAMERA_APPS = ("Photo Booth", "StationCameraProbe", "StationCameraStrobeProbe")
+    HUD_PROCESS = "station-hud"
+    MODES = {"camera", "hud", "dark"}
+    BUTTON_ACTIONS = {"toggle", "wake", "hud", "dark"}
+    SEEN_LIMIT = 256
+    STATE_SCHEMA_VERSION = 2
+    STATE_MAX_BYTES = 2 * 1024 * 1024
+    RECEIPT_RESULT_MAX_BYTES = 4096
+    SESSION_PROBE_TIMEOUT_SECONDS = 2.0
+
+    def __init__(
+        self,
+        *,
+        token: str,
+        ddc: Path,
+        blackout: Path,
+        layout: Path,
+        camera_preference: Path,
+        session: Path,
+        hud: Path,
+        hud_url: str,
+        log: Path,
+        state: Path,
+    ) -> None:
+        self.token = token
+        self.ddc = ddc
+        self.blackout = blackout
+        self.layout = layout
+        self.camera_preference = camera_preference
+        self.session = session
+        self.hud = hud
+        self.hud_url = hud_url
+        self.log_path = log
+        self.state_path = state
+        self.lock = threading.Lock()
+        self.camera_launch_consumed = False
+        self.camera_launch_ready = False
+        self.mode, self.seen = self._load_persisted_state()
+        self.keep_awake: subprocess.Popen[bytes] | None = None
+        self.blackout_process: subprocess.Popen[bytes] | None = None
+        self.hud_process: subprocess.Popen[bytes] | None = None
+        self.attention_until = 0.0
+        self.stop_event = threading.Event()
+        self.log_path.parent.mkdir(parents=True, exist_ok=True)
+        self.state_path.parent.mkdir(parents=True, exist_ok=True)
+        self._ensure_keep_awake()
+        try:
+            session_state = self._safe_session_state(reason="startup")
+            with self.lock:
+                self._reconcile_session_once(session_state, reason="startup")
+                self._write_state("startup_reconciled")
+            self._log("startup_reconciled", active=self.active, mode=self.mode, **session_state)
+        except Exception as exc:
+            self._log(
+                "startup_reconcile_error",
+                active=self.active,
+                mode=self.mode,
+                error=str(exc),
+            )
+        threading.Thread(target=self._reconcile_session_loop, name="session-reconciler", daemon=True).start()
+
+    @property
+    def active(self) -> bool:
+        """Backward-compatible projection: camera/HUD are active; dark is not."""
+
+        return getattr(self, "mode", "dark") != "dark"
+
+    @active.setter
+    def active(self, value: bool) -> None:
+        self.mode = "camera" if value else "dark"
+
+    def _load_mode_state(self) -> str:
+        """Backward-compatible projection used by older tooling."""
+
+        return self._load_persisted_state()[0]
+
+    def _load_persisted_state(
+        self,
+    ) -> tuple[str, OrderedDict[str, dict[str, object]]]:
+        try:
+            if self.state_path.stat().st_size > self.STATE_MAX_BYTES:
+                raise ValueError("station state exceeds size limit")
+            payload = json.loads(self.state_path.read_text(encoding="utf-8"))
+            if not isinstance(payload, dict):
+                raise ValueError("station state must be an object")
+            schema_version = payload.get("schema_version")
+            if schema_version not in {None, self.STATE_SCHEMA_VERSION}:
+                raise ValueError("unsupported station state schema")
+            mode = payload.get("mode")
+            if mode not in self.MODES:
+                mode = "camera" if bool(payload.get("active", False)) else "dark"
+            has_camera_launch_consumed = "camera_launch_consumed" in payload
+            has_camera_launch_ready = "camera_launch_ready" in payload
+            if has_camera_launch_consumed != has_camera_launch_ready:
+                raise ValueError("incomplete camera launch state")
+            has_camera_launch_state = (
+                schema_version == self.STATE_SCHEMA_VERSION
+                and has_camera_launch_consumed
+            )
+            if has_camera_launch_state:
+                camera_launch_consumed = payload.get("camera_launch_consumed")
+                camera_launch_ready = payload.get("camera_launch_ready")
+                if (
+                    not isinstance(camera_launch_consumed, bool)
+                    or not isinstance(camera_launch_ready, bool)
+                    or (camera_launch_ready and not camera_launch_consumed)
+                ):
+                    raise ValueError("invalid camera launch state")
+
+            receipts_payload = payload.get("receipts", [])
+            if not isinstance(receipts_payload, list):
+                raise ValueError("station receipts must be a list")
+            if len(receipts_payload) > self.SEEN_LIMIT:
+                raise ValueError("station receipt limit exceeded")
+
+            receipts: OrderedDict[str, dict[str, object]] = OrderedDict()
+            pending_count = 0
+            pending_mode: str | None = None
+            for receipt in receipts_payload:
+                if not isinstance(receipt, dict):
+                    raise ValueError("invalid station receipt")
+                event_id = receipt.get("event_id")
+                action_digest = receipt.get("action_digest")
+                requested_action = receipt.get("requested_action")
+                target_mode = receipt.get("target_mode")
+                status = receipt.get("status")
+                result = receipt.get("result")
+                if (
+                    not isinstance(event_id, str)
+                    or not event_id
+                    or len(event_id) > 128
+                    or event_id in receipts
+                ):
+                    raise ValueError("invalid station receipt event id")
+                if (
+                    not isinstance(action_digest, str)
+                    or len(action_digest) != 64
+                    or any(
+                        character not in "0123456789abcdef"
+                        for character in action_digest
+                    )
+                ):
+                    raise ValueError("invalid station receipt action digest")
+                if (
+                    requested_action not in self.BUTTON_ACTIONS
+                    or target_mode not in self.MODES
+                    or action_digest != self._button_action_digest(str(requested_action))
+                    or status not in {"pending", "final"}
+                ):
+                    raise ValueError("invalid station receipt action")
+                parsed_receipt: dict[str, object] = {
+                    "action_digest": action_digest,
+                    "requested_action": requested_action,
+                    "target_mode": target_mode,
+                    "status": status,
+                    "changed": bool(receipt.get("changed", False)),
+                }
+                if status == "pending":
+                    if result is not None:
+                        raise ValueError("pending station receipt has a result")
+                    pending_count += 1
+                    if pending_count > 1:
+                        raise ValueError("multiple pending station receipts")
+                    pending_mode = str(target_mode)
+                else:
+                    if (
+                        not isinstance(result, dict)
+                        or result.get("event_id") != event_id
+                        or not isinstance(result.get("ok"), bool)
+                    ):
+                        raise ValueError("invalid station receipt result")
+                    encoded_result = json.dumps(
+                        result, sort_keys=True, separators=(",", ":"), allow_nan=False
+                    ).encode("utf-8")
+                    if len(encoded_result) > self.RECEIPT_RESULT_MAX_BYTES:
+                        raise ValueError("station receipt result exceeds size limit")
+                    parsed_receipt["result"] = dict(result)
+                receipts[event_id] = parsed_receipt
+            effective_mode = pending_mode or str(mode)
+            if has_camera_launch_state:
+                self.camera_launch_consumed = camera_launch_consumed
+                self.camera_launch_ready = camera_launch_ready
+            elif effective_mode == "camera":
+                # A legacy non-pending camera session already owned its launch.
+                # A pending legacy camera transition is ambiguous across the
+                # pre/post-launch crash window, so conservatively classify it
+                # as attempted but not ready. It will never steal focus again;
+                # a fresh button cycle can explicitly rearm it.
+                self.camera_launch_consumed = True
+                self.camera_launch_ready = pending_mode != "camera"
+            else:
+                self.camera_launch_consumed = False
+                self.camera_launch_ready = False
+            return effective_mode, receipts
+        except (OSError, ValueError, TypeError):
+            # Mode and receipts share one integrity boundary. Any corruption
+            # restores the private state and discards ambiguous replay data.
+            self.camera_launch_consumed = False
+            self.camera_launch_ready = False
+            return "dark", OrderedDict()
+
+    def _log(self, event: str, **fields: object) -> None:
+        record = {"ts": time.time(), "event": event, **fields}
+        with self.log_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, sort_keys=True) + "\n")
+
+    def _write_state(self, reason: str) -> None:
+        tmp = self.state_path.with_suffix(".tmp")
+        receipts = []
+        for event_id, receipt in self.seen.items():
+            receipts.append({"event_id": event_id, **receipt})
+        encoded = (
+            json.dumps(
+                {
+                    "schema_version": self.STATE_SCHEMA_VERSION,
+                    "active": self.active,
+                    "mode": self.mode,
+                    "camera_launch_consumed": self.camera_launch_consumed,
+                    "camera_launch_ready": self.camera_launch_ready,
+                    "reason": reason,
+                    "ts": time.time(),
+                    "receipts": receipts,
+                },
+                indent=2,
+                allow_nan=False,
+            )
+            + "\n"
+        ).encode("utf-8")
+        if len(encoded) > self.STATE_MAX_BYTES:
+            raise RuntimeError("station state exceeds size limit")
+        with tmp.open("wb") as handle:
+            os.chmod(tmp, 0o600)
+            handle.write(encoded)
+            handle.flush()
+            os.fsync(handle.fileno())
+        tmp.replace(self.state_path)
+
+    def _run(self, *args: str, timeout: float = 8) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(args, text=True, capture_output=True, timeout=timeout, check=False)
+
+    def _ensure_keep_awake(self) -> None:
+        if self.keep_awake is None or self.keep_awake.poll() is not None:
+            self.keep_awake = subprocess.Popen(
+                ["/usr/bin/caffeinate", "-d", "-i"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+    def _ensure_external_primary(self) -> None:
+        result = self._run(str(self.layout), timeout=15)
+        detail = "\n".join(part for part in (result.stdout, result.stderr) if part)
+        if result.returncode != 0 or any(
+            marker in detail
+            for marker in ("DISPLAY_LAYOUT_NO_EXTERNAL", "NO_ACTIVE_DISPLAYS")
+        ):
+            raise RuntimeError(
+                "external display layout failed: "
+                + (result.stderr or result.stdout or "unknown error")
+            )
+
+    def _select_external_camera(self) -> None:
+        result = self._run(str(self.camera_preference))
+        if result.returncode != 0:
+            raise RuntimeError(
+                "external camera selection failed: "
+                + (result.stderr or result.stdout or "Alloco webcam unavailable")
+            )
+        self._log("external_camera_selected", detail=result.stdout.strip())
+
+    def _configure_photo_booth_camera_policy(self) -> None:
+        result = self._run(
+            "/usr/bin/defaults",
+            "write",
+            "com.apple.PhotoBooth",
+            "DisableAutomaticCameraSelection",
+            "-bool",
+            "false",
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                "Photo Booth automatic camera policy failed: "
+                + (result.stderr or result.stdout or "unknown error")
+            )
+        self._log("photo_booth_automatic_camera_enabled")
+
+    def session_state(self) -> dict[str, object]:
+        try:
+            result = self._run(
+                str(self.session), timeout=self.SESSION_PROBE_TIMEOUT_SECONDS
+            )
+        except Exception:
+            return self._unavailable_session_state()
+        try:
+            payload = json.loads(result.stdout)
+        except (TypeError, ValueError):
+            return self._unavailable_session_state()
+        if (
+            not isinstance(payload, dict)
+            or result.returncode not in {0, 10}
+            or not all(
+                isinstance(payload.get(key), bool)
+                for key in ("locked", "login_done", "on_console")
+            )
+        ):
+            return self._unavailable_session_state()
+        locked = payload["locked"]
+        login_done = payload["login_done"]
+        on_console = payload["on_console"]
+        return {
+            "session_locked": locked,
+            "session_login_done": login_done,
+            "session_on_console": on_console,
+            "session_probe_available": True,
+            "unlocked": result.returncode == 0 and not locked and login_done and on_console,
+        }
+
+    @staticmethod
+    def _unavailable_session_state() -> dict[str, object]:
+        return {
+            "session_locked": True,
+            "session_login_done": False,
+            "session_on_console": False,
+            "session_probe_available": False,
+            "unlocked": False,
+        }
+
+    def _safe_session_state(self, *, reason: str) -> dict[str, object]:
+        try:
+            return self.session_state()
+        except Exception as exc:
+            self._log(
+                "session_probe_error",
+                reason=reason,
+                error_type=type(exc).__name__,
+            )
+            return self._unavailable_session_state()
+
+    def _reconcile_session_loop(self) -> None:
+        while not self.stop_event.wait(2):
+            try:
+                session_state = self._safe_session_state(reason="poll")
+                with self.lock:
+                    self._reconcile_session_once(session_state, reason="poll")
+            except Exception as exc:
+                self._log("session_reconcile_error", error=str(exc))
+
+    def _reconcile_session_once(
+        self, session_state: dict[str, object], *, reason: str
+    ) -> bool:
+        """Converge physical processes while retaining the desired logical mode."""
+
+        if not session_state.get("unlocked"):
+            if self._private_cover_converged():
+                return False
+            self._ensure_private_cover()
+            self._log(
+                "session_locked_private_cover_reconciled",
+                active=self.active,
+                mode=self.mode,
+                reason=reason,
+                **session_state,
+            )
+            return True
+        if self._mode_converged(self.mode):
+            return False
+        self._apply_mode(self.mode)
+        self._log(
+            "session_unlocked_reconciled",
+            active=self.active,
+            mode=self.mode,
+            reason=reason,
+        )
+        return True
+
+    def station_camera_app_running(self) -> bool:
+        return any(
+            self._run("/usr/bin/pgrep", "-x", process_name).returncode == 0
+            for process_name in self.CAMERA_APPS
+        )
+
+    def hud_running(self) -> bool:
+        if self.hud_process is not None and self.hud_process.poll() is None:
+            return True
+        return self._run("/usr/bin/pgrep", "-x", self.HUD_PROCESS).returncode == 0
+
+    def blackout_running(self) -> bool:
+        if self.blackout_process is not None and self.blackout_process.poll() is None:
+            return True
+        return (
+            self._run(
+                "/usr/bin/pgrep", "-f", "-x", str(self.blackout)
+            ).returncode
+            == 0
+        )
+
+    def _mode_converged(self, mode: str) -> bool:
+        camera = self.station_camera_app_running()
+        hud = self.hud_running()
+        blackout = self.blackout_running()
+        return {
+            # A camera activation owns one Photo Booth launch, not the app's
+            # lifetime. Once that launch succeeds, manually closing Photo
+            # Booth is a converged workspace state until the next mode cycle.
+            "camera": (
+                self.camera_launch_ready and not hud and not blackout
+            )
+            or (
+                self.camera_launch_consumed
+                and not self.camera_launch_ready
+                and blackout
+                and not camera
+                and not hud
+            ),
+            "hud": hud and not camera and not blackout,
+            "dark": blackout and not camera and not hud,
+        }[mode]
+
+    def _private_cover_converged(self) -> bool:
+        return (
+            self.blackout_running()
+            and not self.station_camera_app_running()
+            and not self.hud_running()
+        )
+
+    def _apply_mode(self, mode: str) -> None:
+        {
+            "camera": self._display_camera,
+            "hud": self._display_hud,
+            "dark": self._display_dark,
+        }[mode]()
+
+    def attention_active(self) -> bool:
+        return time.monotonic() < self.attention_until
+
+    def ping_attention(self, seconds: float) -> dict[str, object]:
+        with self.lock:
+            duration = max(3.0, min(float(seconds), 60.0))
+            self.attention_until = time.monotonic() + duration
+            result: dict[str, object] = {
+                "ok": True,
+                "attention": True,
+                "expires_in_seconds": duration,
+            }
+            self._log("attention_ping", **result)
+            return result
+
+    def _stop_station_camera_apps(self) -> None:
+        # AppleScript can activate an application merely to deliver `quit`.
+        # Never summon Photo Booth as a side effect of stopping an absent app.
+        if self._run("/usr/bin/pgrep", "-x", "Photo Booth").returncode == 0:
+            self._run(
+                "/usr/bin/osascript",
+                "-e",
+                'tell application "Photo Booth" to quit',
+            )
+        for process_name in self.CAMERA_APPS[1:]:
+            self._run("/usr/bin/pkill", "-x", process_name)
+        for _attempt in range(30):
+            if not self.station_camera_app_running():
+                return
+            time.sleep(0.1)
+        for process_name in self.CAMERA_APPS:
+            self._run("/usr/bin/pkill", "-x", process_name)
+        for _attempt in range(20):
+            if not self.station_camera_app_running():
+                return
+            time.sleep(0.1)
+        raise RuntimeError("station camera app remained active after shutdown")
+
+    def _stop_hud(self) -> None:
+        if self.hud_process is not None and self.hud_process.poll() is None:
+            self.hud_process.terminate()
+            try:
+                self.hud_process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.hud_process.kill()
+        self.hud_process = None
+        if self._run("/usr/bin/pgrep", "-x", self.HUD_PROCESS).returncode == 0:
+            self._run("/usr/bin/pkill", "-x", self.HUD_PROCESS)
+        for _attempt in range(20):
+            if self._run("/usr/bin/pgrep", "-x", self.HUD_PROCESS).returncode != 0:
+                return
+            time.sleep(0.1)
+        raise RuntimeError("station HUD remained active after shutdown")
+
+    def _set_luminance(self, value: int) -> None:
+        last_error = "display unavailable"
+        for _attempt in range(5):
+            subprocess.Popen(
+                ["/usr/bin/caffeinate", "-u", "-t", "2"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            result = self._run(
+                str(self.ddc), "display", "1", "set", "luminance", str(value)
+            )
+            if result.returncode == 0:
+                return
+            last_error = result.stderr or result.stdout or last_error
+            time.sleep(1)
+        raise RuntimeError(f"DDC luminance {value} failed: {last_error}")
+
+    def _stop_blackout(self) -> None:
+        if self.blackout_process is not None and self.blackout_process.poll() is None:
+            self.blackout_process.terminate()
+            try:
+                self.blackout_process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.blackout_process.kill()
+        self.blackout_process = None
+
+        if self.blackout_running():
+            self._run("/usr/bin/pkill", "-f", "-x", str(self.blackout))
+        for _attempt in range(20):
+            if not self.blackout_running():
+                return
+            time.sleep(0.1)
+        raise RuntimeError("station blackout remained active after shutdown")
+
+    def _ensure_blackout(self) -> None:
+        if not self.blackout.exists():
+            raise RuntimeError(f"station blackout helper missing: {self.blackout}")
+        if self.blackout_running():
+            return
+        self.blackout_process = subprocess.Popen(
+            [str(self.blackout)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        time.sleep(0.15)
+        if self.blackout_process.poll() is not None:
+            self.blackout_process = None
+            raise RuntimeError("station blackout exited during launch")
+
+    def _ensure_private_cover(self) -> None:
+        self._ensure_keep_awake()
+        try:
+            self._ensure_blackout()
+        except Exception:
+            # Camera/HUD must never survive a lock or shutdown, even when the
+            # privacy-cover helper itself is unhealthy.
+            self._stop_station_camera_apps()
+            self._stop_hud()
+            raise
+        self._stop_station_camera_apps()
+        self._stop_hud()
+
+    def _display_camera(self) -> None:
+        self._ensure_keep_awake()
+        self._ensure_blackout()
+        self._stop_hud()
+        if self.camera_launch_consumed:
+            if not self.camera_launch_ready:
+                if self.station_camera_app_running():
+                    self.camera_launch_ready = True
+                    try:
+                        self._write_state("camera_launch_recovered")
+                    except Exception:
+                        self.camera_launch_ready = False
+                        self._ensure_private_cover()
+                        raise
+                else:
+                    self._ensure_private_cover()
+                    raise RuntimeError(
+                        "Photo Booth launch was attempted but did not become ready"
+                    )
+            # Restore the camera-cycle workspace after a lock, service restart,
+            # or conflicting HUD without reopening a dismissed Photo Booth.
+            try:
+                self._ensure_external_primary()
+                self._stop_blackout()
+            except Exception:
+                self._ensure_blackout()
+                raise
+            return
+        self._stop_station_camera_apps()
+        try:
+            self._ensure_external_primary()
+            self._select_external_camera()
+            self._configure_photo_booth_camera_policy()
+            self._run(
+                "/usr/bin/defaults",
+                "delete",
+                "com.apple.PhotoBooth",
+                "NSWindow Frame Main Window",
+            )
+            # Persist before the focus-stealing operation. A crash from this
+            # point onward consumes the launch slot and cannot cause a second
+            # automatic `open` in the same camera activation.
+            self.camera_launch_consumed = True
+            self.camera_launch_ready = False
+            try:
+                self._write_state("camera_launch_attempted")
+            except Exception:
+                self.camera_launch_consumed = False
+                raise
+            result = self._run("/usr/bin/open", "-a", "Photo Booth")
+            if result.returncode != 0:
+                raise RuntimeError(
+                    "Photo Booth launch failed: "
+                    + (result.stderr or result.stdout or "unknown error")
+                )
+            for _attempt in range(30):
+                if self.station_camera_app_running():
+                    break
+                time.sleep(0.1)
+            else:
+                raise RuntimeError("Photo Booth did not become ready")
+            self.camera_launch_ready = True
+            try:
+                self._write_state("camera_launch_ready")
+            except Exception:
+                self.camera_launch_ready = False
+                raise
+            self._stop_blackout()
+        except Exception:
+            if not self.camera_launch_ready:
+                self._stop_station_camera_apps()
+                self._ensure_blackout()
+            raise
+
+    def _display_hud(self) -> None:
+        self._ensure_keep_awake()
+        self._ensure_blackout()
+        self._stop_station_camera_apps()
+        try:
+            self._ensure_external_primary()
+            if not self.hud.exists():
+                raise RuntimeError(f"station HUD helper missing: {self.hud}")
+            self._stop_hud()
+            self.hud_process = subprocess.Popen(
+                [str(self.hud), self.hud_url],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            time.sleep(0.15)
+            if self.hud_process.poll() is not None or not self.hud_running():
+                raise RuntimeError("station HUD exited during launch")
+            self._stop_blackout()
+        except Exception:
+            self._stop_hud()
+            self._ensure_blackout()
+            raise
+
+    def _display_dark(self) -> None:
+        self._ensure_private_cover()
+
+    # Backward-compatible names retained for the deployed protocol and tests.
+    def _display_on(self) -> None:
+        self._display_camera()
+
+    def _display_off(self) -> None:
+        self._display_dark()
+
+    def button(
+        self,
+        event_id: str,
+        detected_at: float | None = None,
+        requested_action: str = "toggle",
+    ) -> dict[str, object]:
+        with self.lock:
+            if requested_action not in self.BUTTON_ACTIONS:
+                raise ValueError("invalid button action")
+            action_digest = self._button_action_digest(requested_action)
+            if event_id in self.seen:
+                receipt = self.seen[event_id]
+                self._trim_seen()
+                if receipt.get("action_digest") != action_digest:
+                    result = {
+                        "ok": False,
+                        "event_id": event_id,
+                        "error": "event_id_action_conflict",
+                    }
+                    self._log("button_replay_conflict", **result)
+                    return result
+                if receipt.get("status") == "final":
+                    stored_result = receipt.get("result")
+                    if isinstance(stored_result, dict):
+                        return dict(stored_result)
+                    result = {
+                        "ok": False,
+                        "event_id": event_id,
+                        "error": "event_receipt_invalid",
+                    }
+                    self._log("button_replay_error", **result)
+                    return result
+                return self._resume_pending_button(
+                    event_id,
+                    receipt,
+                    detected_at=detected_at,
+                    started=time.time(),
+                )
+            pending_event_ids = [
+                seen_event_id
+                for seen_event_id, receipt in self.seen.items()
+                if receipt.get("status") == "pending"
+            ]
+            if pending_event_ids:
+                pending_event_id = pending_event_ids[0]
+                pending_receipt = self.seen[pending_event_id]
+                if (
+                    pending_receipt.get("target_mode") == "camera"
+                    and self.camera_launch_consumed
+                    and not self.camera_launch_ready
+                ):
+                    self._finalize_failed_camera_receipt(
+                        pending_event_id, pending_receipt
+                    )
+                    pending_event_ids = [
+                        seen_event_id
+                        for seen_event_id, receipt in self.seen.items()
+                        if receipt.get("status") == "pending"
+                    ]
+            if pending_event_ids:
+                result = {
+                    "ok": False,
+                    "event_id": event_id,
+                    "error": "button_event_pending",
+                    "retryable": True,
+                    "pending_event_id": pending_event_ids[0],
+                }
+                self._log("button_busy", **result)
+                return result
+            self._trim_seen(reserve_slots=1)
+            started = time.time()
+            if requested_action == "toggle":
+                target_mode = "dark" if self.mode in {"camera", "hud"} else "camera"
+            else:
+                target_mode = {"wake": "camera", "hud": "hud", "dark": "dark"}[
+                    requested_action
+                ]
+            session_state = self._safe_session_state(reason="button")
+            if not session_state.get("unlocked") and requested_action != "dark":
+                try:
+                    reconciled = not self._private_cover_converged()
+                    if reconciled:
+                        self._ensure_private_cover()
+                except Exception as exc:
+                    result = {
+                        "ok": False,
+                        "event_id": event_id,
+                        "error": f"locked-session privacy reconcile failed: {exc}",
+                    }
+                    result = self._finalize_button_receipt(
+                        event_id,
+                        action_digest,
+                        requested_action,
+                        target_mode,
+                        target_mode != self.mode,
+                        result,
+                    )
+                    self._log("button_error", **result)
+                    return result
+                result: dict[str, object] = {
+                    "ok": True,
+                    "ignored": True,
+                    "reason": "session_locked",
+                    "event_id": event_id,
+                    "active": self.active,
+                    "mode": self.mode,
+                    "reconciled": reconciled,
+                    **session_state,
+                }
+                result = self._finalize_button_receipt(
+                    event_id,
+                    action_digest,
+                    requested_action,
+                    target_mode,
+                    target_mode != self.mode,
+                    result,
+                )
+                self._log(
+                    "button_ignored" if result.get("ok") else "button_error",
+                    **result,
+                )
+                return result
+            self.attention_until = 0.0
+            changed = target_mode != self.mode
+            previous_mode = self.mode
+            previous_camera_launch_consumed = self.camera_launch_consumed
+            previous_camera_launch_ready = self.camera_launch_ready
+            receipt: dict[str, object] = {
+                "action_digest": action_digest,
+                "requested_action": requested_action,
+                "target_mode": target_mode,
+                "status": "pending",
+                "changed": changed,
+            }
+            self.seen[event_id] = receipt
+            self.mode = target_mode
+            if changed and target_mode == "camera":
+                self.camera_launch_consumed = False
+                self.camera_launch_ready = False
+            try:
+                self._write_state("button_pending")
+            except Exception as exc:
+                self.mode = previous_mode
+                self.camera_launch_consumed = previous_camera_launch_consumed
+                self.camera_launch_ready = previous_camera_launch_ready
+                self.seen.pop(event_id, None)
+                result = {
+                    "ok": False,
+                    "event_id": event_id,
+                    "error": "button_receipt_persistence_failed",
+                    "outcome_unknown": False,
+                }
+                self._log(
+                    "button_receipt_persist_error",
+                    event_id=event_id,
+                    error_type=type(exc).__name__,
+                )
+                return result
+            return self._resume_pending_button(
+                event_id, receipt, detected_at=detected_at, started=started
+            )
+
+    @staticmethod
+    def _button_action_digest(requested_action: str) -> str:
+        canonical = json.dumps(
+            {"action": requested_action}, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+        return hashlib.sha256(canonical).hexdigest()
+
+    def _trim_seen(self, *, reserve_slots: int = 0) -> None:
+        limit = max(0, self.SEEN_LIMIT - reserve_slots)
+        while len(self.seen) > limit:
+            for event_id, receipt in self.seen.items():
+                if receipt.get("status") != "pending":
+                    del self.seen[event_id]
+                    break
+            else:
+                # A pending receipt is the durable single-flight barrier and
+                # must survive trimming until its exact event is finalized.
+                break
+
+    def _finalize_button_receipt(
+        self,
+        event_id: str,
+        action_digest: str,
+        requested_action: str,
+        target_mode: str,
+        changed: bool,
+        result: dict[str, object],
+    ) -> dict[str, object]:
+        prior_receipt = self.seen.get(event_id)
+        self.seen[event_id] = {
+            "action_digest": action_digest,
+            "requested_action": requested_action,
+            "target_mode": target_mode,
+            "status": "final",
+            "changed": changed,
+            "result": dict(result),
+        }
+        try:
+            self._write_state("button_receipt")
+        except Exception as exc:
+            if prior_receipt is None:
+                self.seen.pop(event_id, None)
+            else:
+                self.seen[event_id] = prior_receipt
+            failure: dict[str, object] = {
+                "ok": False,
+                "event_id": event_id,
+                "error": "button_receipt_persistence_failed",
+                "outcome_unknown": bool(result.get("ok")),
+            }
+            self._log(
+                "button_receipt_persist_error",
+                event_id=event_id,
+                error_type=type(exc).__name__,
+            )
+            return failure
+        return result
+
+    def _finalize_failed_camera_receipt(
+        self,
+        event_id: str,
+        receipt: dict[str, object],
+    ) -> dict[str, object]:
+        result: dict[str, object] = {
+            "ok": False,
+            "event_id": event_id,
+            "error": "camera_launch_failed",
+            "retryable": False,
+            "active": self.active,
+            "mode": self.mode,
+            "requested_action": str(receipt["requested_action"]),
+            "changed": bool(receipt.get("changed", False)),
+        }
+        result = self._finalize_button_receipt(
+            event_id,
+            str(receipt["action_digest"]),
+            str(receipt["requested_action"]),
+            str(receipt["target_mode"]),
+            bool(receipt.get("changed", False)),
+            result,
+        )
+        self._log("button_error", **result)
+        return result
+
+    def _resume_pending_button(
+        self,
+        event_id: str,
+        receipt: dict[str, object],
+        *,
+        detected_at: float | None,
+        started: float,
+    ) -> dict[str, object]:
+        requested_action = str(receipt["requested_action"])
+        target_mode = str(receipt["target_mode"])
+        session_state = self._safe_session_state(reason="button_replay")
+        if not session_state.get("unlocked") and target_mode != "dark":
+            try:
+                if not self._private_cover_converged():
+                    self._ensure_private_cover()
+            except Exception as exc:
+                error = f"locked-session privacy reconcile failed: {exc}"
+            else:
+                error = "session_locked_pending"
+            result = {
+                "ok": False,
+                "event_id": event_id,
+                "error": error,
+                "retryable": True,
+            }
+            self._log("button_pending", **result)
+            return result
+        try:
+            converged = self._mode_converged(target_mode)
+            reconciled = not converged
+            if reconciled:
+                self._apply_mode(target_mode)
+        except Exception as exc:
+            if (
+                target_mode == "camera"
+                and self.camera_launch_consumed
+                and not self.camera_launch_ready
+            ):
+                return self._finalize_failed_camera_receipt(event_id, receipt)
+            result = {
+                "ok": False,
+                "event_id": event_id,
+                "error": str(exc),
+                "retryable": True,
+            }
+            self._log("button_error", **result)
+            return result
+        if (
+            target_mode == "camera"
+            and self.camera_launch_consumed
+            and not self.camera_launch_ready
+        ):
+            return self._finalize_failed_camera_receipt(event_id, receipt)
+        self.mode = target_mode
+        result: dict[str, object] = {
+            "ok": True,
+            "event_id": event_id,
+            "active": self.active,
+            "mode": self.mode,
+            "action": self.mode,
+            "requested_action": requested_action,
+            "changed": bool(receipt.get("changed", False)),
+            "reconciled": reconciled,
+            "elapsed_ms": round((time.time() - started) * 1000, 1),
+        }
+        if detected_at is not None:
+            result["edge_to_ack_ms"] = round((time.time() - detected_at) * 1000, 1)
+        result = self._finalize_button_receipt(
+            event_id,
+            str(receipt["action_digest"]),
+            requested_action,
+            target_mode,
+            bool(receipt.get("changed", False)),
+            result,
+        )
+        self._log("button_ack" if result.get("ok") else "button_error", **result)
+        return result
+
+    def shutdown(self) -> None:
+        self.stop_event.set()
+        with self.lock:
+            try:
+                self._ensure_private_cover()
+                self._log("shutdown_private_cover_ready", mode=self.mode)
+            except Exception as exc:
+                self._log("shutdown_private_cover_error", error=str(exc), mode=self.mode)
+            if self.keep_awake is not None and self.keep_awake.poll() is None:
+                self.keep_awake.terminate()
+
+
+def handler_for(station: Station) -> type[BaseHTTPRequestHandler]:
+    class Handler(BaseHTTPRequestHandler):
+        MAX_BODY_BYTES = 4096
+        SOCKET_TIMEOUT_SECONDS = 3.0
+
+        def setup(self) -> None:
+            super().setup()
+            # Bounds both initial header parsing and authenticated body reads;
+            # ThreadingHTTPServer otherwise permits a slow client to retain a
+            # receiver thread indefinitely.
+            self.connection.settimeout(self.SOCKET_TIMEOUT_SECONDS)
+
+        def _json(self, status: int, payload: dict[str, object]) -> None:
+            body = json.dumps(payload).encode()
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def _authorized(self) -> bool:
+            header = self.headers.get("Authorization", "")
+            prefix = "Bearer "
+            if not header.startswith(prefix):
+                return False
+            return hmac.compare_digest(header[len(prefix) :], station.token)
+
+        def _read_json_body(self) -> dict[str, object]:
+            if self.headers.get("Transfer-Encoding"):
+                raise ValueError("Transfer-Encoding is not supported")
+            raw_sizes = self.headers.get_all("Content-Length", [])
+            if len(raw_sizes) != 1:
+                raise ValueError("exactly one Content-Length is required")
+            raw_size = raw_sizes[0]
+            try:
+                size = int(raw_size)
+            except ValueError as exc:
+                raise ValueError("invalid Content-Length") from exc
+            if size < 0 or size > self.MAX_BODY_BYTES:
+                raise ValueError("request body too large")
+            if size == 0:
+                return {}
+            body = self.rfile.read(size)
+            if len(body) != size:
+                raise ValueError("incomplete request body")
+            payload = json.loads(body)
+            if not isinstance(payload, dict):
+                raise ValueError("request body must be a JSON object")
+            return payload
+
+        def do_GET(self) -> None:  # noqa: N802
+            if not self._authorized():
+                self._json(401, {"ok": False, "error": "unauthorized"})
+                return
+            if self.path != "/health":
+                self._json(404, {"ok": False})
+                return
+            session_state = station.session_state()
+            camera_running = station.station_camera_app_running()
+            camera_launch_consumed = station.camera_launch_consumed
+            camera_launch_ready = station.camera_launch_ready
+            if station.mode != "camera":
+                camera_session_state = "inactive"
+            elif not camera_launch_consumed:
+                camera_session_state = "armed"
+            elif not camera_launch_ready:
+                camera_session_state = (
+                    "recovering" if camera_running else "failed"
+                )
+            elif camera_running:
+                camera_session_state = "open"
+            else:
+                camera_session_state = "dismissed"
+            self._json(
+                200,
+                {
+                    "ok": True,
+                    "active": station.active,
+                    "mode": station.mode,
+                    "station_camera_app_running": camera_running,
+                    "camera_launch_consumed": camera_launch_consumed,
+                    "camera_launch_ready": camera_launch_ready,
+                    "camera_session_state": camera_session_state,
+                    "hud_running": station.hud_running(),
+                    "blackout_running": station.blackout_running(),
+                    "attention": station.attention_active(),
+                    **session_state,
+                },
+            )
+
+        def do_POST(self) -> None:  # noqa: N802
+            if not self._authorized():
+                self._json(401, {"ok": False, "error": "unauthorized"})
+                return
+            if self.path == "/attention":
+                try:
+                    payload = self._read_json_body()
+                    seconds = float(payload.get("seconds", 15))
+                except Exception as exc:
+                    self._json(400, {"ok": False, "error": str(exc)})
+                    return
+                self._json(200, station.ping_attention(seconds))
+                return
+            if self.path != "/button":
+                self._json(404, {"ok": False})
+                return
+            try:
+                payload = self._read_json_body()
+                event_id = str(payload["event_id"])
+                detected_at = float(payload["detected_at"]) if "detected_at" in payload else None
+                requested_action = str(payload.get("action", "toggle"))
+                if not event_id or len(event_id) > 128:
+                    raise ValueError("invalid event_id")
+                if requested_action not in {"toggle", "wake", "hud", "dark"}:
+                    raise ValueError("invalid button action")
+            except Exception as exc:
+                self._json(400, {"ok": False, "error": str(exc)})
+                return
+            result = station.button(event_id, detected_at, requested_action)
+            self._json(200 if result.get("ok") else 500, result)
+
+        def log_message(self, _format: str, *_args: object) -> None:
+            return
+
+    return Handler
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--bind", default="0.0.0.0")
+    parser.add_argument("--port", type=int, default=8791)
+    parser.add_argument("--token-file", type=Path, required=True)
+    parser.add_argument("--ddc", type=Path, required=True)
+    parser.add_argument("--blackout", type=Path, required=True)
+    parser.add_argument("--layout", type=Path, required=True)
+    parser.add_argument("--camera-preference", type=Path, required=True)
+    parser.add_argument("--session", type=Path, required=True)
+    parser.add_argument("--hud", type=Path, required=True)
+    parser.add_argument("--hud-url", default="http://127.0.0.1:8795/")
+    parser.add_argument("--log", type=Path, required=True)
+    parser.add_argument("--state", type=Path, required=True)
+    args = parser.parse_args()
+    token = args.token_file.read_text(encoding="utf-8").strip()
+    if len(token) < 32:
+        raise SystemExit("token must contain at least 32 characters")
+    station = Station(
+        token=token,
+        ddc=args.ddc,
+        blackout=args.blackout,
+        layout=args.layout,
+        camera_preference=args.camera_preference,
+        session=args.session,
+        hud=args.hud,
+        hud_url=args.hud_url,
+        log=args.log,
+        state=args.state,
+    )
+    server = ThreadingHTTPServer((args.bind, args.port), handler_for(station))
+    def stop_server(*_args: object) -> None:
+        threading.Thread(target=server.shutdown, daemon=True).start()
+
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        signal.signal(sig, stop_server)
+    try:
+        server.serve_forever()
+    finally:
+        station.shutdown()
+        server.server_close()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

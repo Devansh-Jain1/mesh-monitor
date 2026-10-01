@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>Mesh Monitor M1 Camera</string>
+	<key>CFBundleExecutable</key>
+	<string>MeshMonitorM1Camera</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.devansh.mesh-monitor.m1-camera</string>
+	<key>CFBundleName</key>
+	<string>Mesh Monitor M1 Camera</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.1</string>
+	<key>CFBundleVersion</key>
+	<string>2</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Mesh Monitor uses your explicitly selected external camera to provide a live room preview during a session you start. Stop, Pause, Night, and station privacy controls end the session. Images are held in memory; sharing with an agent is a separate choice.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
+</plist>

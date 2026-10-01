@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en</string>
+  <key>CFBundleExecutable</key>
+  <string>M4LocalVoiceNotch</string>
+  <key>CFBundleIdentifier</key>
+	<string>com.devansh.m4-local-voice-notch</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+	<string>M4 Local Voice Notch</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+	<string>0.3.0</string>
+  <key>CFBundleVersion</key>
+	<string>3</string>
+  <key>LSMinimumSystemVersion</key>
+  <string>14.0</string>
+  <key>LSUIElement</key>
+  <true/>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>The local VoiceSession listens only while its Notch indicator is red.</string>
+  <key>NSSpeechRecognitionUsageDescription</key>
+  <string>The local VoiceSession uses on-device recognition for attended conversation.</string>
+  <key>NSScreenCaptureUsageDescription</key>
+  <string>Optional attended screen context remains on this Mac.</string>
+</dict>
+</plist>

@@ -1,0 +1,10 @@
+artifacts/
+.DS_Store
+__pycache__/
+*.pyc
+.env*
+*.onnx
+*.gguf
+*.bin
+*.app/
+*.zip

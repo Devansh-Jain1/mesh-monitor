@@ -1,0 +1,732 @@
+{
+  "base_commit": "9b954346bc0682409dad87f321bf1c5bd2323636",
+  "includes_uncommitted_work": true,
+  "peer_addresses_replaced_with_placeholders": true,
+  "files": [
+    {
+      "path": ".gitignore",
+      "source_sha256": "12c44532e8a462550a4e4675033c0aeb76987184d45daf32777f06692f07f0b1",
+      "export_sha256": "7b2efb3c06bc767adc5ddf7267e9ede17afae8a2d2de388c67b7ca5d8115850b"
+    },
+    {
+      "path": "README.md",
+      "source_sha256": "e8f561a86c1fb7d1db5649677c042472b2997bec8b2392699edadd5c6b89dae6",
+      "export_sha256": "1cc63a1dd2afb255447e8016cfac2fecaf8a2c7ddcc408bc1a77c8c795bf928b"
+    },
+    {
+      "path": "docs/mesh-monitor-camera-presence.md",
+      "source_sha256": "baf1f95a1f7e34ede7ca9f1d03b708033b356989c9da1058f7e0092b6e3ca64c",
+      "export_sha256": "baf1f95a1f7e34ede7ca9f1d03b708033b356989c9da1058f7e0092b6e3ca64c"
+    },
+    {
+      "path": "docs/mesh-monitor-captions.md",
+      "source_sha256": "9550d6cc02105e6e8a5c60349ad2ddfb1ea4a98340ac6864d646a39d68187bcc",
+      "export_sha256": "9550d6cc02105e6e8a5c60349ad2ddfb1ea4a98340ac6864d646a39d68187bcc"
+    },
+    {
+      "path": "docs/mesh-monitor-m1-camera-setup.md",
+      "source_sha256": "4faf1249573c23ee51ee8e768786300fdd465d20d7031b0ca4a26af57a2db695",
+      "export_sha256": "4faf1249573c23ee51ee8e768786300fdd465d20d7031b0ca4a26af57a2db695"
+    },
+    {
+      "path": "docs/mesh-monitor-m1-return-trigger.md",
+      "source_sha256": "5318f0d4db2ddb939c17c906b56c9714686a751cdf1ef65f04bf8c0fb053ad9b",
+      "export_sha256": "7b0972a2534e5d1d6bb5f72b5cab21636904d1c9bce8faab9c413ba18a291bf5"
+    },
+    {
+      "path": "docs/mesh-monitor-managed-camera-protocol.md",
+      "source_sha256": "97889f0db34b5a3a1cfacc04070f3cbc4d90b9b13ad70362a437b6a0779a55d6",
+      "export_sha256": "97889f0db34b5a3a1cfacc04070f3cbc4d90b9b13ad70362a437b6a0779a55d6"
+    },
+    {
+      "path": "docs/mesh-monitor-notch-v2.md",
+      "source_sha256": "32335e95afdb707c44c19f36f158232fb704c98c8e7df5e64ebd7d447632facd",
+      "export_sha256": "32335e95afdb707c44c19f36f158232fb704c98c8e7df5e64ebd7d447632facd"
+    },
+    {
+      "path": "ops/MeshMonitorM1Camera-Info.plist",
+      "source_sha256": "385749258e2e2712d7d66a14653f94a4534a46d9edab4b0412a1c99435997411",
+      "export_sha256": "385749258e2e2712d7d66a14653f94a4534a46d9edab4b0412a1c99435997411"
+    },
+    {
+      "path": "ops/build_m4_local_voice_notch.py",
+      "source_sha256": "d27d7337a9696fb3877ff6f19a370d5297d29d524a8df1209fbd6a9d43844fde",
+      "export_sha256": "d27d7337a9696fb3877ff6f19a370d5297d29d524a8df1209fbd6a9d43844fde"
+    },
+    {
+      "path": "ops/build_mesh_monitor.py",
+      "source_sha256": "c9d1e133ebeeae3e7aad5e02067ab82737e0d9287ad8dbf8f59760e3e3d0ef2d",
+      "export_sha256": "c9d1e133ebeeae3e7aad5e02067ab82737e0d9287ad8dbf8f59760e3e3d0ef2d"
+    },
+    {
+      "path": "ops/build_mesh_monitor_m1_camera.py",
+      "source_sha256": "45f56a3d506c5c9a6e1b5d6d1a2a295be238783165c0bce753f9ba5ed1d69649",
+      "export_sha256": "45f56a3d506c5c9a6e1b5d6d1a2a295be238783165c0bce753f9ba5ed1d69649"
+    },
+    {
+      "path": "ops/install_mesh_focus_recovery.py",
+      "source_sha256": "9ed2cb9811227167686060fdc0754b133f7c84b3a200ec81231ee5a961161dc4",
+      "export_sha256": "9ed2cb9811227167686060fdc0754b133f7c84b3a200ec81231ee5a961161dc4"
+    },
+    {
+      "path": "ops/install_mesh_monitor.py",
+      "source_sha256": "4edda557853baee363fe185b09b7cb30ba4e7709a5d6805549c8a8906b00cc89",
+      "export_sha256": "4edda557853baee363fe185b09b7cb30ba4e7709a5d6805549c8a8906b00cc89"
+    },
+    {
+      "path": "ops/m4_codex_conversation_capture.swift",
+      "source_sha256": "b2973571a2bc11e241888f867ba3131b62b56caa21a49dcaf4edffc03dcadff9",
+      "export_sha256": "b2973571a2bc11e241888f867ba3131b62b56caa21a49dcaf4edffc03dcadff9"
+    },
+    {
+      "path": "ops/m4_codex_conversation_capture_Info.plist",
+      "source_sha256": "ffd6a854a11793272ab2151d2cb4e8fc2f652b5b3ac62af731823ad5994b3450",
+      "export_sha256": "ffd6a854a11793272ab2151d2cb4e8fc2f652b5b3ac62af731823ad5994b3450"
+    },
+    {
+      "path": "ops/m4_local_voice/kokoro_onnx_worker.py",
+      "source_sha256": "d3164a85bb542de9be5c4cc46ae7f48be8c168448446d29857e0e40e335a299c",
+      "export_sha256": "d3164a85bb542de9be5c4cc46ae7f48be8c168448446d29857e0e40e335a299c"
+    },
+    {
+      "path": "ops/mesh_monitor_camera_snapshot.swift",
+      "source_sha256": "926f5109c19e0a45d9dcfd1845869fe5aa87493c1caf09807abc028f785c8bbd",
+      "export_sha256": "926f5109c19e0a45d9dcfd1845869fe5aa87493c1caf09807abc028f785c8bbd"
+    },
+    {
+      "path": "ops/mesh_monitor_control_room_responder.py",
+      "source_sha256": "a5757e938ee4bc11f15741c186ebfb0968c393a87d84968041487d8637011eab",
+      "export_sha256": "0f3808bf64e79ec439667618b407524cbe59bc268efb521d52b8ab6eb76d7fc6"
+    },
+    {
+      "path": "ops/mesh_monitor_m1_audio_receiver.py",
+      "source_sha256": "bb8f704b3e8578ce57ec1017f15162de3f11a78cff114a81a99d7430d846234d",
+      "export_sha256": "bb8f704b3e8578ce57ec1017f15162de3f11a78cff114a81a99d7430d846234d"
+    },
+    {
+      "path": "ops/mesh_monitor_m1_camera_patch.py",
+      "source_sha256": "6d39db12c7129c4ba8b36cdb2d4285fef7ffb8d5410c91ca2c2baf63d0612817",
+      "export_sha256": "6d39db12c7129c4ba8b36cdb2d4285fef7ffb8d5410c91ca2c2baf63d0612817"
+    },
+    {
+      "path": "ops/mesh_monitor_m1_camera_station.py",
+      "source_sha256": "f895c6f9e9299141463f25990f45bd9558b2bf2d765590bd42362270eb92cb64",
+      "export_sha256": "f895c6f9e9299141463f25990f45bd9558b2bf2d765590bd42362270eb92cb64"
+    },
+    {
+      "path": "ops/mesh_monitor_m1_return_patch.py",
+      "source_sha256": "64ffbff3839e7a88444fc25e1d1492427624d00e473ccd40c0e2da8aefce33e2",
+      "export_sha256": "64ffbff3839e7a88444fc25e1d1492427624d00e473ccd40c0e2da8aefce33e2"
+    },
+    {
+      "path": "ops/mesh_monitor_snapshot.py",
+      "source_sha256": "646aa9908c2629a53d745ff24b53810c621b1bc5511768151b788ae233e9d004",
+      "export_sha256": "646aa9908c2629a53d745ff24b53810c621b1bc5511768151b788ae233e9d004"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/README.md",
+      "source_sha256": "2dee19ea07a6e8900ce14f56ab46b11433fdd955bc876d8562d6eada4c96152b",
+      "export_sha256": "2dee19ea07a6e8900ce14f56ab46b11433fdd955bc876d8562d6eada4c96152b"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/calibration.cjs",
+      "source_sha256": "147d15539d7494f0d8e537fc4974ec361366d3c7444051d5d78d67ca7d55791b",
+      "export_sha256": "147d15539d7494f0d8e537fc4974ec361366d3c7444051d5d78d67ca7d55791b"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/observer-main.cjs",
+      "source_sha256": "7f99e3d45759ee1dd37f3e9a544c85cb932ed90c33a66568e5f42003aac5bdd8",
+      "export_sha256": "7f99e3d45759ee1dd37f3e9a544c85cb932ed90c33a66568e5f42003aac5bdd8"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/observer-preload.cjs",
+      "source_sha256": "2489fb426a6e6fda2bc4782a1c0c42fe83ef0704a321286418adffabc886f684",
+      "export_sha256": "2489fb426a6e6fda2bc4782a1c0c42fe83ef0704a321286418adffabc886f684"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/observer-renderer.js",
+      "source_sha256": "bff2440c6f083248bf3a1198bfcf840b37b975439de5345e58b00d5023be6763",
+      "export_sha256": "bff2440c6f083248bf3a1198bfcf840b37b975439de5345e58b00d5023be6763"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/observer.html",
+      "source_sha256": "75bbaf23b1c14bfbc68160c3d816522acced51c192bd183137c5fb46830e28e3",
+      "export_sha256": "75bbaf23b1c14bfbc68160c3d816522acced51c192bd183137c5fb46830e28e3"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/patcher.py",
+      "source_sha256": "b7a0a3119b300bb3b857efff272cdf17fdd24db173aea3ec080f1fa6b893ef84",
+      "export_sha256": "b7a0a3119b300bb3b857efff272cdf17fdd24db173aea3ec080f1fa6b893ef84"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/publisher.cjs",
+      "source_sha256": "71640ede3a78e95874357fed1f547efb19bf33102b33c0d1fe9186b3d9cdf55a",
+      "export_sha256": "71640ede3a78e95874357fed1f547efb19bf33102b33c0d1fe9186b3d9cdf55a"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/test_patcher.py",
+      "source_sha256": "6d1de262ed419b0697b0d4748d0d971c2601719827896c10dc017353445ee30f",
+      "export_sha256": "6d1de262ed419b0697b0d4748d0d971c2601719827896c10dc017353445ee30f"
+    },
+    {
+      "path": "ops/neocursor_mesh_adapter/upstream-seam.md",
+      "source_sha256": "2ac1c4e3023cb52667f1518965f4e7ddf808457ffee20739e0b9b907b3a811b8",
+      "export_sha256": "2ac1c4e3023cb52667f1518965f4e7ddf808457ffee20739e0b9b907b3a811b8"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/Info-M4LocalVoice.plist",
+      "source_sha256": "14907052e2db5f2c789064b4d04f271002cde3c80378af101222d1f0d335518b",
+      "export_sha256": "14907052e2db5f2c789064b4d04f271002cde3c80378af101222d1f0d335518b"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/Info-MeshMonitor.plist",
+      "source_sha256": "64819a425d0786147445f8d268b0a51a924af79bfe0644514dae99d2ce944486",
+      "export_sha256": "64819a425d0786147445f8d268b0a51a924af79bfe0644514dae99d2ce944486"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/M4LFMVisionBrain.swift",
+      "source_sha256": "3fce0d810a6869f822b2afd05f5e6982af40811238b299f0978975195d61e02c",
+      "export_sha256": "3fce0d810a6869f822b2afd05f5e6982af40811238b299f0978975195d61e02c"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/M4LocalVoiceSession.swift",
+      "source_sha256": "1f7ff94ae0fe13c394d8ed337ca90e972223f8e88f5f02b97fce0f307e29804d",
+      "export_sha256": "1f7ff94ae0fe13c394d8ed337ca90e972223f8e88f5f02b97fce0f307e29804d"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/M4ParakeetSpeechInput.swift",
+      "source_sha256": "eefdcb6338d46c64899388d4b4d9385d45ec3fc2452dae0823745f15e2d7b621",
+      "export_sha256": "eefdcb6338d46c64899388d4b4d9385d45ec3fc2452dae0823745f15e2d7b621"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/M4ParakeetWorker.swift",
+      "source_sha256": "178e3cc182ccc7a468c8ff694266c2c281890157e9867f4ae6fad9b65a117c53",
+      "export_sha256": "178e3cc182ccc7a468c8ff694266c2c281890157e9867f4ae6fad9b65a117c53"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/M4ResidentJSONWorker.swift",
+      "source_sha256": "205e492d9692ed925cb1926dd529fe77a9927bae9822dcd6b1f81730a91174a9",
+      "export_sha256": "205e492d9692ed925cb1926dd529fe77a9927bae9822dcd6b1f81730a91174a9"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshApplicationChrome.swift",
+      "source_sha256": "8670d63343dd37c4977120f61b9cfdf3656bbf948d0fb12fb9106ed863bb9834",
+      "export_sha256": "8670d63343dd37c4977120f61b9cfdf3656bbf948d0fb12fb9106ed863bb9834"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshCameraPresence.swift",
+      "source_sha256": "6533b6033ce71b5aedb6c6598bcbbb6046a921aab4992482b59cb1d9faec9747",
+      "export_sha256": "6533b6033ce71b5aedb6c6598bcbbb6046a921aab4992482b59cb1d9faec9747"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshCaptionCore.swift",
+      "source_sha256": "6749104bbb4f9d42d6023b2672e49703588fc18b8975a61a43d3da2e4c26e419",
+      "export_sha256": "6749104bbb4f9d42d6023b2672e49703588fc18b8975a61a43d3da2e4c26e419"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshCodexClient.swift",
+      "source_sha256": "3a963a614f5486d7e6ecef68a946f56dcf4bd085a638a1cec330a735b568249f",
+      "export_sha256": "3a963a614f5486d7e6ecef68a946f56dcf4bd085a638a1cec330a735b568249f"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshControlRoomClient.swift",
+      "source_sha256": "47cd0dedec49ca9c9482642c84e0c61d3e52ede0587e26adc2ed4025d5fe34f6",
+      "export_sha256": "47cd0dedec49ca9c9482642c84e0c61d3e52ede0587e26adc2ed4025d5fe34f6"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshConversationHistory.swift",
+      "source_sha256": "8ccfb73c26c9e50db5ea04416befae852340a7a90295cca5317797570cb58414",
+      "export_sha256": "8ccfb73c26c9e50db5ea04416befae852340a7a90295cca5317797570cb58414"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshDashboard.swift",
+      "source_sha256": "f57b93090e876e5461b3991e1d2b15ba1e93a0e0be9ff8300e55540b71a27c7f",
+      "export_sha256": "f57b93090e876e5461b3991e1d2b15ba1e93a0e0be9ff8300e55540b71a27c7f"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshDesignPreview.swift",
+      "source_sha256": "788e8f0e855c167e6c0ace2199614bac89ae25ddaab57fda1b1eb528aa07a9e1",
+      "export_sha256": "788e8f0e855c167e6c0ace2199614bac89ae25ddaab57fda1b1eb528aa07a9e1"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshFocusActivity.swift",
+      "source_sha256": "5a81682d45a99218784a85aef892590a8f2bbef82561d2c433e4e9e8d6e89ee2",
+      "export_sha256": "5a81682d45a99218784a85aef892590a8f2bbef82561d2c433e4e9e8d6e89ee2"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshFocusCoach.swift",
+      "source_sha256": "0e5b15fbc27cf6df32a47f340527956679a306892157b9eb4d6125de06b2bf2b",
+      "export_sha256": "0e5b15fbc27cf6df32a47f340527956679a306892157b9eb4d6125de06b2bf2b"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshFocusGazeContext.swift",
+      "source_sha256": "0b21b0c096b44d85309de532c930e253fc87a84749a0fca36c95c138e76dae36",
+      "export_sha256": "0b21b0c096b44d85309de532c930e253fc87a84749a0fca36c95c138e76dae36"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshFocusMonitor.swift",
+      "source_sha256": "27f76c2bcac5281d5286b4f90866f09a07096a3e35f539cf1d260f331b7913fe",
+      "export_sha256": "27f76c2bcac5281d5286b4f90866f09a07096a3e35f539cf1d260f331b7913fe"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshFocusState.swift",
+      "source_sha256": "2dee2299ef209910950ab955d48ef4c334dba2cbf43c5c8fb85fed5c4c46029f",
+      "export_sha256": "2dee2299ef209910950ab955d48ef4c334dba2cbf43c5c8fb85fed5c4c46029f"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshHomeCalendar.swift",
+      "source_sha256": "15eaf0fb84a61fc5a69de896daada4aff43b5df1e10ee3eb108e0828d471f834",
+      "export_sha256": "15eaf0fb84a61fc5a69de896daada4aff43b5df1e10ee3eb108e0828d471f834"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshM1AudioOutput.swift",
+      "source_sha256": "b6111987da27849dc8a096079e48f9867b4e6630d500bac774f6b68e4da6bc68",
+      "export_sha256": "b6111987da27849dc8a096079e48f9867b4e6630d500bac774f6b68e4da6bc68"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshM1CameraRuntime.swift",
+      "source_sha256": "72c9446f278b5743dc67e8b416ac0db0e14eb70b23cb4071eaeafb030554f9dd",
+      "export_sha256": "72c9446f278b5743dc67e8b416ac0db0e14eb70b23cb4071eaeafb030554f9dd"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshM1CameraSSH.swift",
+      "source_sha256": "08c3acbef3d1c82618584b1696778fc8b39257000733bc5865e8d8599f660554",
+      "export_sha256": "08c3acbef3d1c82618584b1696778fc8b39257000733bc5865e8d8599f660554"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshM1ReturnTrigger.swift",
+      "source_sha256": "8614e413ae5164d6c93dce4d00ce41bbe9fbdfb3bcdd0f3cdae66d1de2125e2b",
+      "export_sha256": "8614e413ae5164d6c93dce4d00ce41bbe9fbdfb3bcdd0f3cdae66d1de2125e2b"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshManagedCameraConnection.swift",
+      "source_sha256": "6e6f77c0f2269fbb0a1c31bfc9cfbcd2989b5a8f83df50ce694bb1ce35717c88",
+      "export_sha256": "6e6f77c0f2269fbb0a1c31bfc9cfbcd2989b5a8f83df50ce694bb1ce35717c88"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshMonitorApp.swift",
+      "source_sha256": "c5b03e3356ce888b1d9bcc0a8121bb1b39857db73e68a4279d6e29cc043e2b29",
+      "export_sha256": "c5b03e3356ce888b1d9bcc0a8121bb1b39857db73e68a4279d6e29cc043e2b29"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshMonitorIcon.swift",
+      "source_sha256": "71cc716ff4c78a6cea67d5ca6cad8847ef0d1d8e30511b0b5e939f78bdbd11ff",
+      "export_sha256": "71cc716ff4c78a6cea67d5ca6cad8847ef0d1d8e30511b0b5e939f78bdbd11ff"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshMorningState.swift",
+      "source_sha256": "b2158f80ab6a0c3e12f9361550a602c3e6a85d10f04e0b5c5ee4daac57127a22",
+      "export_sha256": "b2158f80ab6a0c3e12f9361550a602c3e6a85d10f04e0b5c5ee4daac57127a22"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshNeoCursorRuntime.swift",
+      "source_sha256": "b247ac18ab8f41e189ed0f39f56d76ec644ea0a66de18c39652792b96abda0f3",
+      "export_sha256": "b247ac18ab8f41e189ed0f39f56d76ec644ea0a66de18c39652792b96abda0f3"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshNotchController.swift",
+      "source_sha256": "2026a613e742e58dd318c05be656fde7fc1614ff37e0837d6757ade25d08feac",
+      "export_sha256": "2026a613e742e58dd318c05be656fde7fc1614ff37e0837d6757ade25d08feac"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshQuestionEvidence.swift",
+      "source_sha256": "c6b088745a5cc1b75835620f5e68ab172778f8946ff9ad78095c0b6862ae0e42",
+      "export_sha256": "c6b088745a5cc1b75835620f5e68ab172778f8946ff9ad78095c0b6862ae0e42"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshRuntimeMetrics.swift",
+      "source_sha256": "bfb2610731485d6ed51c5c5759f97c3f2659fd22e5d84a38f26c13a7cef504e2",
+      "export_sha256": "bfb2610731485d6ed51c5c5759f97c3f2659fd22e5d84a38f26c13a7cef504e2"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshScreenContext.swift",
+      "source_sha256": "3a02281c4e47c5b752755b8028cc5971319ba6a3858a4f7213ebde6b5dea97c3",
+      "export_sha256": "3a02281c4e47c5b752755b8028cc5971319ba6a3858a4f7213ebde6b5dea97c3"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshScreenGeometry.swift",
+      "source_sha256": "9f179b1bab20d35afb5380e014c6b71fc0a77abfd9695c17f9291860c070ef09",
+      "export_sha256": "9f179b1bab20d35afb5380e014c6b71fc0a77abfd9695c17f9291860c070ef09"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshTermination.swift",
+      "source_sha256": "c02171d8041961324366d135b5b38ebf02429008853bb87cf8bc02a6ae56b232",
+      "export_sha256": "c02171d8041961324366d135b5b38ebf02429008853bb87cf8bc02a6ae56b232"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshTranscription.swift",
+      "source_sha256": "9e028e3098ce8202ac286ce120710bd37ee9819490af63335020ddf08c60336a",
+      "export_sha256": "9e028e3098ce8202ac286ce120710bd37ee9819490af63335020ddf08c60336a"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshVoiceBridge.swift",
+      "source_sha256": "af5e6b2b74a736a4aece3fbee6d1024e853b4a3aa445057182beda90d58cbe2b",
+      "export_sha256": "af5e6b2b74a736a4aece3fbee6d1024e853b4a3aa445057182beda90d58cbe2b"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshVoiceStart.swift",
+      "source_sha256": "f9dc46d303ff0b3a5d7aa78a13f2000ea372a53bce31040e230ca51ea18acb6f",
+      "export_sha256": "f9dc46d303ff0b3a5d7aa78a13f2000ea372a53bce31040e230ca51ea18acb6f"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/MeshWakeSetup.swift",
+      "source_sha256": "dce68d33e8ab19b4f815987328a377cb0efa13439bb4cd5e6ee7d9b63533775f",
+      "export_sha256": "dce68d33e8ab19b4f815987328a377cb0efa13439bb4cd5e6ee7d9b63533775f"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/WorkMacClaudeTranscriptCapture.swift",
+      "source_sha256": "3dcf0534e691c703b40f6f4fae55b148fdff487aa24090d1a1962259b9618b36",
+      "export_sha256": "3dcf0534e691c703b40f6f4fae55b148fdff487aa24090d1a1962259b9618b36"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/WorkMacInferenceRuntime.swift",
+      "source_sha256": "e49dbf75e41559056b11225a7fd4075fcb0a4f71937fec1018933fbaa10dda1b",
+      "export_sha256": "e49dbf75e41559056b11225a7fd4075fcb0a4f71937fec1018933fbaa10dda1b"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/WorkMacNotchPanel.swift",
+      "source_sha256": "ecc03157a76af837bb91cc4858ac75b2ab0de70d966fc6bb7ecb7fe538dc4e6d",
+      "export_sha256": "ecc03157a76af837bb91cc4858ac75b2ab0de70d966fc6bb7ecb7fe538dc4e6d"
+    },
+    {
+      "path": "ops/work_mac_copilot_app/WorkMacPrivateCopilot.swift",
+      "source_sha256": "abb3284948228cee9f3c8d4e0c14238d39d776df2d6438be00321be04cb3b157",
+      "export_sha256": "abb3284948228cee9f3c8d4e0c14238d39d776df2d6438be00321be04cb3b157"
+    },
+    {
+      "path": "tests/fixtures/mesh_monitor_codex/mock_app_server.py",
+      "source_sha256": "3f29ae305ec574dc40b453435faff9f3dfa932814442b0f7919f051c30b7f360",
+      "export_sha256": "3f29ae305ec574dc40b453435faff9f3dfa932814442b0f7919f051c30b7f360"
+    },
+    {
+      "path": "tests/fixtures/mesh_monitor_m1_receiver_original.py.txt",
+      "source_sha256": "17e55eec24f08c65abf97c31973a8823c3a6b65456756f31599be4db804f9e44",
+      "export_sha256": "17e55eec24f08c65abf97c31973a8823c3a6b65456756f31599be4db804f9e44"
+    },
+    {
+      "path": "tests/mesh_camera_permission_fixture.swift",
+      "source_sha256": "ab5248d34df2fca738db3f5174054926a8980ed6ad764b5c713bc7fe139c5038",
+      "export_sha256": "ab5248d34df2fca738db3f5174054926a8980ed6ad764b5c713bc7fe139c5038"
+    },
+    {
+      "path": "tests/mesh_camera_presence_harness.swift",
+      "source_sha256": "f5499c27a7e3f8c278ffc0593c948d581c30157dab6f636b13ab920bda11c595",
+      "export_sha256": "f5499c27a7e3f8c278ffc0593c948d581c30157dab6f636b13ab920bda11c595"
+    },
+    {
+      "path": "tests/mesh_captions_fixture.swift",
+      "source_sha256": "4de69e6557e6a7c66ffc18c37eae8e2e26af62f8d0c180906f6534dabf82599d",
+      "export_sha256": "4de69e6557e6a7c66ffc18c37eae8e2e26af62f8d0c180906f6534dabf82599d"
+    },
+    {
+      "path": "tests/mesh_control_room_fixture.swift",
+      "source_sha256": "d85221901bdb5bb1b33d39d30fe3c20bbd8cd79e0cafaf1a4e36155fe8cca81c",
+      "export_sha256": "d85221901bdb5bb1b33d39d30fe3c20bbd8cd79e0cafaf1a4e36155fe8cca81c"
+    },
+    {
+      "path": "tests/mesh_conversation_history_fixture.swift",
+      "source_sha256": "a8d10689d802e0adcafea68b0af8c93f7fd01c68a599e15e0c88d4477a8c9c61",
+      "export_sha256": "a8d10689d802e0adcafea68b0af8c93f7fd01c68a599e15e0c88d4477a8c9c61"
+    },
+    {
+      "path": "tests/mesh_focus_activity_fixture.swift",
+      "source_sha256": "dad6edeab9335bdef914950af6d34bb1e8ecea9a918cab930f6db2a9bfbe4ba3",
+      "export_sha256": "dad6edeab9335bdef914950af6d34bb1e8ecea9a918cab930f6db2a9bfbe4ba3"
+    },
+    {
+      "path": "tests/mesh_focus_coach_fixture.swift",
+      "source_sha256": "de24133748d7301d27de0683e99098b6e464ea95af6be15692a301a3e0698d94",
+      "export_sha256": "de24133748d7301d27de0683e99098b6e464ea95af6be15692a301a3e0698d94"
+    },
+    {
+      "path": "tests/mesh_focus_gaze_context_fixture.swift",
+      "source_sha256": "3f8097ea5e9cafc997f1e29f2c514232b83f0c20d0c91e416d33de71e222df70",
+      "export_sha256": "3f8097ea5e9cafc997f1e29f2c514232b83f0c20d0c91e416d33de71e222df70"
+    },
+    {
+      "path": "tests/mesh_focus_json_contract_fixture.swift",
+      "source_sha256": "5ddc6b30eb9b8777a1414f3a0da2baeebf6aa7cd81d381f6106ce9967115a859",
+      "export_sha256": "5ddc6b30eb9b8777a1414f3a0da2baeebf6aa7cd81d381f6106ce9967115a859"
+    },
+    {
+      "path": "tests/mesh_focus_monitor_fixture.swift",
+      "source_sha256": "491f8cb50c825f457246e502b823e9e5b4743a0965963731207774b63308bfba",
+      "export_sha256": "491f8cb50c825f457246e502b823e9e5b4743a0965963731207774b63308bfba"
+    },
+    {
+      "path": "tests/mesh_home_calendar_fixture.swift",
+      "source_sha256": "de2d291ed8b0ffb12e1e76787e276ffb794aa44d3d2c47ea55cf175653810a5e",
+      "export_sha256": "de2d291ed8b0ffb12e1e76787e276ffb794aa44d3d2c47ea55cf175653810a5e"
+    },
+    {
+      "path": "tests/mesh_m1_camera_runtime_fixture.swift",
+      "source_sha256": "734f8281bb1d1a9b8d78d47b22e3426c8abcca4273f121b16becab6939e4c293",
+      "export_sha256": "734f8281bb1d1a9b8d78d47b22e3426c8abcca4273f121b16becab6939e4c293"
+    },
+    {
+      "path": "tests/mesh_m1_camera_ssh_fixture.swift",
+      "source_sha256": "3a95d66b00d8e17888e7314ded9dd87d44227879e57fffcf4f7ae8bf152dfa25",
+      "export_sha256": "3a95d66b00d8e17888e7314ded9dd87d44227879e57fffcf4f7ae8bf152dfa25"
+    },
+    {
+      "path": "tests/mesh_m1_return_fixture.swift",
+      "source_sha256": "6653f94dc79742b8915988c375a855e9175b73f4b0d21f8167c2b3819e8c84e3",
+      "export_sha256": "9cd1733ad8b3741f1fb7cd38f1058bb2238bc5a518e43b0691d91f3cbabf022b"
+    },
+    {
+      "path": "tests/mesh_m1_return_shutdown_fixture.swift",
+      "source_sha256": "7ab07cd2ef8c3e139e584338f5d448cea5000dd216605ace332a8c9f7fdcdd6e",
+      "export_sha256": "7ab07cd2ef8c3e139e584338f5d448cea5000dd216605ace332a8c9f7fdcdd6e"
+    },
+    {
+      "path": "tests/mesh_managed_camera_fixture.swift",
+      "source_sha256": "3b3be6173593678ce1982e40657eb765f93e418f194f37135a0ca975b5fcae7d",
+      "export_sha256": "3b3be6173593678ce1982e40657eb765f93e418f194f37135a0ca975b5fcae7d"
+    },
+    {
+      "path": "tests/mesh_monitor_codex_adapter_tests.swift",
+      "source_sha256": "503f2bffb27a4992a6849d448886795f4776ca42c75f9fd71b26fe341c14c9d6",
+      "export_sha256": "503f2bffb27a4992a6849d448886795f4776ca42c75f9fd71b26fe341c14c9d6"
+    },
+    {
+      "path": "tests/mesh_monitor_speech_chunks.swift",
+      "source_sha256": "20d617d38f7ef56e0070e33b51acd4ea3d63e631fdd4781064556f4d54e37ee7",
+      "export_sha256": "20d617d38f7ef56e0070e33b51acd4ea3d63e631fdd4781064556f4d54e37ee7"
+    },
+    {
+      "path": "tests/mesh_morning_state_fixture.swift",
+      "source_sha256": "2ebb29c62acb9ad1a221e4f6b1e60ecb3bf0c1f2f3837913b2a34d9108731c72",
+      "export_sha256": "2ebb29c62acb9ad1a221e4f6b1e60ecb3bf0c1f2f3837913b2a34d9108731c72"
+    },
+    {
+      "path": "tests/mesh_neocursor_runtime_fixture.swift",
+      "source_sha256": "37a0b4409c68937dbe5d144f90cf35466fae6a4667c26a88170d65adc69cb9d3",
+      "export_sha256": "37a0b4409c68937dbe5d144f90cf35466fae6a4667c26a88170d65adc69cb9d3"
+    },
+    {
+      "path": "tests/mesh_notch_fixture.swift",
+      "source_sha256": "2df55294a294ad4529b6d4e3c767835aabadf7fb77b34b05eaf766fd3856f293",
+      "export_sha256": "2df55294a294ad4529b6d4e3c767835aabadf7fb77b34b05eaf766fd3856f293"
+    },
+    {
+      "path": "tests/mesh_notch_interaction_fixture.swift",
+      "source_sha256": "479616c6366184eddbcf8294b5696bf7e48a338d4bb8da753d59345f55550bed",
+      "export_sha256": "479616c6366184eddbcf8294b5696bf7e48a338d4bb8da753d59345f55550bed"
+    },
+    {
+      "path": "tests/mesh_notch_preview.swift",
+      "source_sha256": "0c3abb662f729651d00a007f0163b022e971c3f30ab3eaffeb7b282dc9786298",
+      "export_sha256": "0c3abb662f729651d00a007f0163b022e971c3f30ab3eaffeb7b282dc9786298"
+    },
+    {
+      "path": "tests/mesh_question_evidence_fixture.swift",
+      "source_sha256": "43624c1dd43dbf5b05b39c7221db2f21a705aa431213447bfde8692b24aa818f",
+      "export_sha256": "43624c1dd43dbf5b05b39c7221db2f21a705aa431213447bfde8692b24aa818f"
+    },
+    {
+      "path": "tests/mesh_resident_worker_fixture.swift",
+      "source_sha256": "0dbc3904c8f93803d436bd6e7dc292233ba61241256705f2b4aa8e53c1517d2f",
+      "export_sha256": "0dbc3904c8f93803d436bd6e7dc292233ba61241256705f2b4aa8e53c1517d2f"
+    },
+    {
+      "path": "tests/mesh_runtime_metrics_fixture.swift",
+      "source_sha256": "0d4445ef528baa8e909a692680c5a074892f92972a5cdb13a12fd5c12963ba6b",
+      "export_sha256": "0d4445ef528baa8e909a692680c5a074892f92972a5cdb13a12fd5c12963ba6b"
+    },
+    {
+      "path": "tests/mesh_screen_context_fixture.swift",
+      "source_sha256": "a083746033e284424b1b5f26a444417057e0ed1ef51f6eec86c026834415b68b",
+      "export_sha256": "a083746033e284424b1b5f26a444417057e0ed1ef51f6eec86c026834415b68b"
+    },
+    {
+      "path": "tests/mesh_screen_geometry_fixture.swift",
+      "source_sha256": "7e3ea9cbcdcb405832d56884a3b42d3c1f95a146086a77c0ab7d9e1733bdc81f",
+      "export_sha256": "7e3ea9cbcdcb405832d56884a3b42d3c1f95a146086a77c0ab7d9e1733bdc81f"
+    },
+    {
+      "path": "tests/mesh_snapshot_managed_fixture.swift",
+      "source_sha256": "cfaa5d2a07cc591f9ed679fc6c654d9b8976f33130db217502e0288728c04b38",
+      "export_sha256": "cfaa5d2a07cc591f9ed679fc6c654d9b8976f33130db217502e0288728c04b38"
+    },
+    {
+      "path": "tests/mesh_termination_fixture.swift",
+      "source_sha256": "93221fe891cb0ff4cd698600890ec42c0015202ddbdef67b9402decb99a0550b",
+      "export_sha256": "93221fe891cb0ff4cd698600890ec42c0015202ddbdef67b9402decb99a0550b"
+    },
+    {
+      "path": "tests/mesh_voice_start_fixture.swift",
+      "source_sha256": "7e9f1fa3b19643672305c6330ce7e43814ee30636d6b22f118ccdc235f681227",
+      "export_sha256": "7e9f1fa3b19643672305c6330ce7e43814ee30636d6b22f118ccdc235f681227"
+    },
+    {
+      "path": "tests/mesh_wake_setup_fixture.swift",
+      "source_sha256": "0cd2c770b6fc60c1acf7b66cde7aa98beb2e287a7592eecdb00c2fb6dfac3726",
+      "export_sha256": "0cd2c770b6fc60c1acf7b66cde7aa98beb2e287a7592eecdb00c2fb6dfac3726"
+    },
+    {
+      "path": "tests/neocursor_electron_engine_probe.cjs",
+      "source_sha256": "4ea14dc2e07094023b63c9e96eafdab2f9ab2e5b5d69afb0cb2ccebbbfe7d9da",
+      "export_sha256": "4ea14dc2e07094023b63c9e96eafdab2f9ab2e5b5d69afb0cb2ccebbbfe7d9da"
+    },
+    {
+      "path": "tests/test_m4_codex_conversation_capture.py",
+      "source_sha256": "b015e8a3ae8a5b6ebcc1f29f3f15c25412cb26f3d42f85798edb8477b93a2819",
+      "export_sha256": "b015e8a3ae8a5b6ebcc1f29f3f15c25412cb26f3d42f85798edb8477b93a2819"
+    },
+    {
+      "path": "tests/test_m4_local_voice_session.py",
+      "source_sha256": "a707f53252067afb48a08251591a91a0c00feb7a702832a642dcc1238ed3f3c9",
+      "export_sha256": "3ed5cebfcfe6a66b79fa47aa831987e3ced33616cab1e3d9f76dad554312be8a"
+    },
+    {
+      "path": "tests/test_mesh_camera_permission.py",
+      "source_sha256": "27bc02086e942d0f235d6b150b366e4852e55b90f2ee9d6540f317c0c3504777",
+      "export_sha256": "27bc02086e942d0f235d6b150b366e4852e55b90f2ee9d6540f317c0c3504777"
+    },
+    {
+      "path": "tests/test_mesh_camera_presence.py",
+      "source_sha256": "f2ce573b9852f60ca229bd004d1ae499d16700e317165d0eff4b1ccd7cde124f",
+      "export_sha256": "f2ce573b9852f60ca229bd004d1ae499d16700e317165d0eff4b1ccd7cde124f"
+    },
+    {
+      "path": "tests/test_mesh_control_room_responder.py",
+      "source_sha256": "3c0a9e0fcbcf1e28c245594820969bb90acd3371c2aa3ad6ee8a70fe56605ead",
+      "export_sha256": "5e86e442b85c299a2c8db8f349bdc32771afa55bc7705b8684a4d3027780fbd1"
+    },
+    {
+      "path": "tests/test_mesh_conversation_history.py",
+      "source_sha256": "b6aec95872919e65d46d1331517fce229f235b1010eaf750f020cf6f09671b6b",
+      "export_sha256": "b6aec95872919e65d46d1331517fce229f235b1010eaf750f020cf6f09671b6b"
+    },
+    {
+      "path": "tests/test_mesh_focus_activity.py",
+      "source_sha256": "0c961963404c1a1cb49a2216005d00620127ee3c52468dd411b3b1dc8c1483eb",
+      "export_sha256": "0c961963404c1a1cb49a2216005d00620127ee3c52468dd411b3b1dc8c1483eb"
+    },
+    {
+      "path": "tests/test_mesh_focus_coach.py",
+      "source_sha256": "9e625f008165d814a445d75b65ed75d5d7afec887bcc611c79056cb092f4cf08",
+      "export_sha256": "9e625f008165d814a445d75b65ed75d5d7afec887bcc611c79056cb092f4cf08"
+    },
+    {
+      "path": "tests/test_mesh_focus_gaze_context.py",
+      "source_sha256": "0101779bc71be8c5dda29e74cedfbb8bb2048d061f83c678b7f8f938eb6d95ba",
+      "export_sha256": "0101779bc71be8c5dda29e74cedfbb8bb2048d061f83c678b7f8f938eb6d95ba"
+    },
+    {
+      "path": "tests/test_mesh_focus_json_contract.py",
+      "source_sha256": "6bec72f5ed2517fd87bf01625a9cae3745b4174086f9b889d0d8ba58f6b1dc23",
+      "export_sha256": "6bec72f5ed2517fd87bf01625a9cae3745b4174086f9b889d0d8ba58f6b1dc23"
+    },
+    {
+      "path": "tests/test_mesh_focus_monitor.py",
+      "source_sha256": "da1d89d29d4e8dd971c30fc8667d266fcc3f293f27e8a408a2d113ec3b4c2d89",
+      "export_sha256": "da1d89d29d4e8dd971c30fc8667d266fcc3f293f27e8a408a2d113ec3b4c2d89"
+    },
+    {
+      "path": "tests/test_mesh_m1_audio_receiver.py",
+      "source_sha256": "b5445adde331e9bec95914f6a7db7f9c1350bb714913b342824caed8c1f02ea4",
+      "export_sha256": "b5445adde331e9bec95914f6a7db7f9c1350bb714913b342824caed8c1f02ea4"
+    },
+    {
+      "path": "tests/test_mesh_m1_camera_packaging.py",
+      "source_sha256": "055ff266143dcf947a9439439a65dfd491ec234892031a876da5cbb6972a4d99",
+      "export_sha256": "055ff266143dcf947a9439439a65dfd491ec234892031a876da5cbb6972a4d99"
+    },
+    {
+      "path": "tests/test_mesh_m1_camera_patch.py",
+      "source_sha256": "ed02fddc48eeaced2c6161437c168495c48db13865e9da269a7c6e0bb4d75966",
+      "export_sha256": "ed02fddc48eeaced2c6161437c168495c48db13865e9da269a7c6e0bb4d75966"
+    },
+    {
+      "path": "tests/test_mesh_m1_camera_runtime.py",
+      "source_sha256": "e9434271a93a9678fd8a73880c522585d8d4959931e2394384ee2e5681b911ab",
+      "export_sha256": "e9434271a93a9678fd8a73880c522585d8d4959931e2394384ee2e5681b911ab"
+    },
+    {
+      "path": "tests/test_mesh_m1_camera_ssh.py",
+      "source_sha256": "4ff24fef818ada4aa3f6eaf48c1e5b01ae55841643b0e164e67e31d8efc0b7ae",
+      "export_sha256": "4ff24fef818ada4aa3f6eaf48c1e5b01ae55841643b0e164e67e31d8efc0b7ae"
+    },
+    {
+      "path": "tests/test_mesh_m1_camera_station.py",
+      "source_sha256": "8e0991e89b9c29f0b733a6c82848ed281e313cdb13eb7ae96814e081486233d4",
+      "export_sha256": "8e0991e89b9c29f0b733a6c82848ed281e313cdb13eb7ae96814e081486233d4"
+    },
+    {
+      "path": "tests/test_mesh_m1_return.py",
+      "source_sha256": "fe6703adea83c64d9d48a91bc672a7574cf269bcaec4675f08443db581fa164f",
+      "export_sha256": "fe6703adea83c64d9d48a91bc672a7574cf269bcaec4675f08443db581fa164f"
+    },
+    {
+      "path": "tests/test_mesh_managed_camera.py",
+      "source_sha256": "a7e44e4a0c1a8e2c8fb22425704413ff78497aa5db926526a2ac60ff06828a28",
+      "export_sha256": "a7e44e4a0c1a8e2c8fb22425704413ff78497aa5db926526a2ac60ff06828a28"
+    },
+    {
+      "path": "tests/test_mesh_monitor_m1_return_patch.py",
+      "source_sha256": "13ad1a1240bf34787811c0d70f1e5f404d840bc0c98d966e9e202a8dfa558be5",
+      "export_sha256": "13ad1a1240bf34787811c0d70f1e5f404d840bc0c98d966e9e202a8dfa558be5"
+    },
+    {
+      "path": "tests/test_mesh_monitor_snapshot.py",
+      "source_sha256": "cbb2bbb81835647906b62ce34712f68a4faf629a870bc3aefc66f872fbda12a0",
+      "export_sha256": "cbb2bbb81835647906b62ce34712f68a4faf629a870bc3aefc66f872fbda12a0"
+    },
+    {
+      "path": "tests/test_mesh_neocursor_runtime.py",
+      "source_sha256": "389a56bfaad1e97ef9cdc2170a946a0aa789821d5d46c9e1816fee60dac97239",
+      "export_sha256": "389a56bfaad1e97ef9cdc2170a946a0aa789821d5d46c9e1816fee60dac97239"
+    },
+    {
+      "path": "tests/test_mesh_notch_interactions.py",
+      "source_sha256": "a323744c3524bc3c4beccea2895f551814ec81fbf1a08376d401b9ac994e8a50",
+      "export_sha256": "a323744c3524bc3c4beccea2895f551814ec81fbf1a08376d401b9ac994e8a50"
+    },
+    {
+      "path": "tests/test_mesh_question_evidence.py",
+      "source_sha256": "1cf5794f802812264435326a0e5bfaa1d634cd81fd2e72f902888bf68f0d7aa0",
+      "export_sha256": "1cf5794f802812264435326a0e5bfaa1d634cd81fd2e72f902888bf68f0d7aa0"
+    },
+    {
+      "path": "tests/test_mesh_resident_worker.py",
+      "source_sha256": "6e82bae1aba4c4f8565eeb0e9b29e6b8c2958249fac75ae87125214afe3eba36",
+      "export_sha256": "6e82bae1aba4c4f8565eeb0e9b29e6b8c2958249fac75ae87125214afe3eba36"
+    },
+    {
+      "path": "tests/test_mesh_screen_context.py",
+      "source_sha256": "9289b865fe29be230337b6eb8885e2a5882e08a76ce68852b7be97ed72c6db35",
+      "export_sha256": "9289b865fe29be230337b6eb8885e2a5882e08a76ce68852b7be97ed72c6db35"
+    },
+    {
+      "path": "tests/test_mesh_snapshot_managed.py",
+      "source_sha256": "774bba7712cb62ca7d6b9e9edb1c1bceffabc918ecab820642f5c570d082c8f1",
+      "export_sha256": "774bba7712cb62ca7d6b9e9edb1c1bceffabc918ecab820642f5c570d082c8f1"
+    },
+    {
+      "path": "tests/test_mesh_termination.py",
+      "source_sha256": "0de067306d04c024f0f78d0045cbf3425c0992e59029d805c3d4147de2cdf11e",
+      "export_sha256": "0de067306d04c024f0f78d0045cbf3425c0992e59029d805c3d4147de2cdf11e"
+    },
+    {
+      "path": "tests/test_mesh_voice_start.py",
+      "source_sha256": "56bcee6703b76376409e53b1d3ee24a9ab112c3825151910724fe407a0e35619",
+      "export_sha256": "56bcee6703b76376409e53b1d3ee24a9ab112c3825151910724fe407a0e35619"
+    },
+    {
+      "path": "tests/test_neocursor_calibration.cjs",
+      "source_sha256": "058f1e45eca01e51836c0ea96da8aa101344aaba6eb63d761d6edbd16e1bd693",
+      "export_sha256": "058f1e45eca01e51836c0ea96da8aa101344aaba6eb63d761d6edbd16e1bd693"
+    },
+    {
+      "path": "tests/test_neocursor_observer.cjs",
+      "source_sha256": "dc09108d7e0405abbd308ddf5c841a2ed289fd8e4fe994fe1628d2eada079f7e",
+      "export_sha256": "dc09108d7e0405abbd308ddf5c841a2ed289fd8e4fe994fe1628d2eada079f7e"
+    },
+    {
+      "path": "tests/test_neocursor_publisher.cjs",
+      "source_sha256": "1b5cb9711f64fec18802125e67ad0f30e4d212337143808fbe54670956e7e22a",
+      "export_sha256": "1b5cb9711f64fec18802125e67ad0f30e4d212337143808fbe54670956e7e22a"
+    }
+  ]
+}

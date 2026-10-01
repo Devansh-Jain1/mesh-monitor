@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key><string>en</string>
+  <key>CFBundleExecutable</key><string>MeshMonitor</string>
+  <key>CFBundleIdentifier</key><string>com.devansh.m4-local-voice-notch</string>
+  <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+  <key>CFBundleName</key><string>Mesh Monitor</string>
+  <key>CFBundleDisplayName</key><string>Mesh Monitor</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>0.6.23</string>
+  <key>CFBundleVersion</key><string>35</string>
+  <key>CFBundleIconFile</key><string>MeshMonitor</string>
+  <key>LSMinimumSystemVersion</key><string>14.0</string>
+  <key>LSUIElement</key><false/>
+  <key>NSHighResolutionCapable</key><true/>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Mesh Monitor listens only when you start Talk or microphone captions, or after an armed physical AIY wake when its conversation connection is ready. Captions stay local; Talk sends your transcribed question to the selected agent.</string>
+  <key>NSSpeechRecognitionUsageDescription</key>
+  <string>Mesh Monitor uses on-device speech transcription for conversations you start.</string>
+  <key>NSScreenCaptureUsageDescription</key>
+  <string>Mesh Monitor captures screen images only when you choose screen evidence. Mac audio captions use local system audio capture without reading video frames or sending transcripts to an agent.</string>
+  <key>NSCameraUsageDescription</key>
+  <string>Mesh Monitor uses the camera you enable for local presence and head-pointer calibration. Camera evidence is sent to Codex only when you explicitly select it for a question.</string>
+  <key>NSCalendarsUsageDescription</key>
+  <string>Mesh Monitor reads events only from the Home calendar you select to show your current schedule. It does not read Family or Work or edit events.</string>
+  <key>NSCalendarsFullAccessUsageDescription</key>
+  <string>macOS requires calendar access to read events. Mesh Monitor reads only your selected Home calendar and does not edit events. Selected task context can be included in a question to Codex.</string>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Mesh Monitor can connect to a camera stream address you provide on your local network. It does not discover or connect to other devices automatically.</string>
+</dict>
+</plist>

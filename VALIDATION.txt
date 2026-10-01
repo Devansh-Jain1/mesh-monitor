@@ -1,0 +1,59 @@
+test_schedule (test_mesh_focus_coach.FocusCoachTests.test_schedule) ... ok
+test_recovery_only_while_explicit_intent_exists (test_mesh_focus_coach.RecoveryLaunchAgentTests.test_recovery_only_while_explicit_intent_exists) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 5.634s
+
+OK
+✔ extracts eye-relative features without treating raw landmarks as screen gaze (2.6755ms)
+✔ requires explicit identity, target arm, 12 unique samples and real capture span (0.81875ms)
+✔ rejects stale and unstable targets, keeping retained sample memory bounded (2.137958ms)
+✔ rejects constant or collinear fits and disarms until explicitly restarted (0.464167ms)
+✔ a failed held-out target clears the fit rather than publishing training success (0.550875ms)
+✔ both held-out targets are required and the error threshold applies independently (0.15025ms)
+✔ validated projection preserves actual capture time and calibration provenance, with no confidence (6.914042ms)
+✔ rejected eye frames expose a bounded reason without landmark data (0.265791ms)
+✔ quality explains readiness and failed accuracy retains diagnostics after fit reset (0.867541ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 68.339041
+test_budget_expiring_during_first_verification_does_not_start_second_ssh (test_mesh_control_room_responder.ResponderFixture.test_budget_expiring_during_first_verification_does_not_start_second_ssh) ... ok
+test_cancel_prevents_reply_and_records_terminal (test_mesh_control_room_responder.ResponderFixture.test_cancel_prevents_reply_and_records_terminal) ... ok
+test_conflicting_existing_reply_terminal_uncertain (test_mesh_control_room_responder.ResponderFixture.test_conflicting_existing_reply_terminal_uncertain) ... ok
+test_crash_after_claim_before_processing_does_not_release_again (test_mesh_control_room_responder.ResponderFixture.test_crash_after_claim_before_processing_does_not_release_again) ... ok
+test_crash_after_prepared_bytes_recovers_identical_reply_only (test_mesh_control_room_responder.ResponderFixture.test_crash_after_prepared_bytes_recovers_identical_reply_only) ... ok
+test_crash_after_reply_publication_only_republishes_identical_bytes (test_mesh_control_room_responder.ResponderFixture.test_crash_after_reply_publication_only_republishes_identical_bytes) ... ok
+test_directory_fsync_failure_after_claim_rename_never_reclaims (test_mesh_control_room_responder.ResponderFixture.test_directory_fsync_failure_after_claim_rename_never_reclaims) ... ok
+test_expired_and_cancelled_unclaimed_backlog_does_not_starve_valid_request (test_mesh_control_room_responder.ResponderFixture.test_expired_and_cancelled_unclaimed_backlog_does_not_starve_valid_request) ... ok
+test_finish_after_publication_crash_reconciles_before_abort_while_paused_expired (test_mesh_control_room_responder.ResponderFixture.test_finish_after_publication_crash_reconciles_before_abort_while_paused_expired) ... ok
+test_fsync_failure_before_claim_rename_releases_no_text (test_mesh_control_room_responder.ResponderFixture.test_fsync_failure_before_claim_rename_releases_no_text) ... ok
+test_invocation_budget_stops_preprocessing_before_unbounded_tombstones (test_mesh_control_room_responder.ResponderFixture.test_invocation_budget_stops_preprocessing_before_unbounded_tombstones) ... ok
+test_malformed_duplicate_json_rejected (test_mesh_control_room_responder.ResponderFixture.test_malformed_duplicate_json_rejected) ... ok
+test_missing_new_epoch_generation_liveness_fields_fail_closed (test_mesh_control_room_responder.ResponderFixture.test_missing_new_epoch_generation_liveness_fields_fail_closed) ... ok
+test_mutations_rejected_without_releasing_original_text (test_mesh_control_room_responder.ResponderFixture.test_mutations_rejected_without_releasing_original_text) ... ok
+test_operator_can_close_uncertain_without_reply (test_mesh_control_room_responder.ResponderFixture.test_operator_can_close_uncertain_without_reply) ... ok
+test_original_hash_and_entire_envelope_hash_are_both_checked (test_mesh_control_room_responder.ResponderFixture.test_original_hash_and_entire_envelope_hash_are_both_checked) ... ok
+test_oversize_request_and_scan_bound (test_mesh_control_room_responder.ResponderFixture.test_oversize_request_and_scan_bound) ... ok
+test_parent_symlink_refused (test_mesh_control_room_responder.ResponderFixture.test_parent_symlink_refused) ... ok
+test_pause_between_preparation_and_final_gate_suppresses_publication (test_mesh_control_room_responder.ResponderFixture.test_pause_between_preparation_and_final_gate_suppresses_publication) ... ok
+test_pause_new_session_and_generation_invalidate_claim (test_mesh_control_room_responder.ResponderFixture.test_pause_new_session_and_generation_invalidate_claim) ... ok
+test_preserves_exact_text_after_durable_processing_claim (test_mesh_control_room_responder.ResponderFixture.test_preserves_exact_text_after_durable_processing_claim) ... ok
+test_processing_expiry_becomes_terminal (test_mesh_control_room_responder.ResponderFixture.test_processing_expiry_becomes_terminal) ... ok
+test_processing_never_reclaimed_by_same_or_different_runner (test_mesh_control_room_responder.ResponderFixture.test_processing_never_reclaimed_by_same_or_different_runner) ... ok
+test_publication_exact_correlation_and_once (test_mesh_control_room_responder.ResponderFixture.test_publication_exact_correlation_and_once) ... ok
+test_readiness_requires_explicit_provisioned_and_bounded_ttl (test_mesh_control_room_responder.ResponderFixture.test_readiness_requires_explicit_provisioned_and_bounded_ttl) ... ok
+test_real_multiprocess_claim_contention_releases_message_only_once (test_mesh_control_room_responder.ResponderFixture.test_real_multiprocess_claim_contention_releases_message_only_once) ... ok
+test_rechecks_cancellation_after_remote_delay (test_mesh_control_room_responder.ResponderFixture.test_rechecks_cancellation_after_remote_delay) ... ok
+test_single_link_private_permissions_and_symlinks (test_mesh_control_room_responder.ResponderFixture.test_single_link_private_permissions_and_symlinks) ... ok
+test_terminal_replied_never_republishes_or_changes_after_history_damage (test_mesh_control_room_responder.ResponderFixture.test_terminal_replied_never_republishes_or_changes_after_history_damage) ... ok
+test_wrong_token_or_runner_cannot_publish (test_mesh_control_room_responder.ResponderFixture.test_wrong_token_or_runner_cannot_publish) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.432s
+
+OK
